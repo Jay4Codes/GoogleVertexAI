@@ -3,3 +3,4 @@ google-auth-oauthlib>=1.0.0
 google-auth>=2.21.0
 google-api-python-client>=2.92.0
 google-api-core>=2.11.1
+python-dotenv>=0.21.1
