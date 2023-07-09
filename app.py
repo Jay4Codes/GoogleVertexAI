@@ -1,6 +1,5 @@
 import streamlit as st
 import os.path
-import datetime as dt
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -14,7 +13,9 @@ st.title('Google Calendar API')
 
 SCOPES = ['https://www.googleapis.com/auth/calendar',
           'https://www.googleapis.com/auth/gmail.send',
-          'https://www.googleapis.com/auth/userinfo.profile']
+          'https://www.googleapis.com/auth/userinfo.profile',
+          'https://www.googleapis.com/auth/userinfo.email',
+          'openid']
 creds = None
 
 
@@ -66,10 +67,10 @@ if st.button("Submit"):
     start_date_time = f"{start_date}T{start_time}-07:00"
     end_date_time = f"{end_date}T{end_time}-07:00"
 
-    # sender = user_service.userinfo().get().execute()['email']
+    sender = user_service.userinfo().get().execute()['email']
 
     cc.create_event(calendar_service, event_summary, location,
                     timezone, description, start_date_time, end_date_time)
     st.write("Event Created" + event_summary)
-    cg.send_gmail(mail_service, "jay4emails@gmail.com", "jay4codes@gmail.com",
+    cg.send_gmail(mail_service, sender, "jay4codes@gmail.com",
                   "Event Created " + event_summary)
