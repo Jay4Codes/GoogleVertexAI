@@ -1,4 +1,5 @@
+lablab_vertexai_env/
+.env
 __pycache__
 token.json
 credentials.json
-lablab_vertexai_env/
