@@ -5,6 +5,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
 
+load_dotenv()
+
 
 def get_services():
     SCOPES = ['https://www.googleapis.com/auth/calendar',
@@ -25,14 +27,14 @@ def get_services():
             flow = InstalledAppFlow.from_client_config(
                 {
                     "installed": {
-                        "client_id": load_dotenv('CLIENT_ID'),
-                        "project_id": load_dotenv('PROJECT_ID'),
-                        "auth_uri": load_dotenv('AUTH_URI'),
-                        "token_uri": load_dotenv('TOKEN_URI'),
-                        "auth_provider_x509_cert_url": load_dotenv('AUTH_PROVIDER_X509_CERT_URL'),
-                        "client_secret": load_dotenv('CLIENT_SECRET'),
+                        "client_id": os.getenv("CLIENT_ID"),
+                        "project_id": os.getenv("PROJECT_ID"),
+                        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                        "token_uri": "https://oauth2.googleapis.com/token",
+                        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                        "client_secret": os.getenv("CLIENT_SECRET"),
                         "redirect_uris": [
-                            load_dotenv('REDIRECT_URIS')
+                            os.getenv("REDIRECT_URI")
                         ]
                     }
                 },
