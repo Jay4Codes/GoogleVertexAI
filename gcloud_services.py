@@ -29,9 +29,9 @@ def get_services():
                     "installed": {
                         "client_id": os.getenv("CLIENT_ID"),
                         "project_id": os.getenv("PROJECT_ID"),
-                        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                        "token_uri": "https://oauth2.googleapis.com/token",
-                        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                        "auth_uri": os.getenv("AUTH_URI"),
+                        "token_uri": os.getenv("TOKEN_URI"),
+                        "auth_provider_x509_cert_url": os.getenv("AUTH_PROVIDER_X509_CERT_URL"),
                         "client_secret": os.getenv("CLIENT_SECRET"),
                         "redirect_uris": [
                             os.getenv("REDIRECT_URI")
