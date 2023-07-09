@@ -125,3 +125,8 @@ watchdog==3.0.0
 wcwidth==0.2.6
 yarl==1.9.2
 zipp==3.16.0
+streamlit>=1.24.1
+google-auth-oauthlib>=1.0.0
+google-auth>=2.21.0
+google-api-python-client>=2.92.0
+google-api-core>=2.11.1

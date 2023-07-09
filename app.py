@@ -1,20 +1,20 @@
 import streamlit as st
-import datetime as dt
 import os.path
-import base64
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 
-from email.message import EmailMessage
+import client_calendar as cc
+import client_gmail as cg
 
-st.title('Google Calendar API')
 
 SCOPES = ['https://www.googleapis.com/auth/calendar',
-          'https://www.googleapis.com/auth/gmail.send']
+          'https://www.googleapis.com/auth/gmail.send',
+          'https://www.googleapis.com/auth/userinfo.profile',
+          'https://www.googleapis.com/auth/userinfo.email',
+          'openid']
 creds = None
 
 
@@ -33,77 +33,49 @@ if not creds or not creds.valid:
     with open('token.json', 'w') as token:
         token.write(creds.to_json())
 
+user_service = build('oauth2', 'v2', credentials=creds)
+calendar_service = build('calendar', 'v3', credentials=creds)
+mail_service = build('gmail', 'v1', credentials=creds)
 
-try:
-    service = build('calendar', 'v3', credentials=creds)
-    mail_service = build('gmail', 'v1', credentials=creds)
-    message = EmailMessage()
+st.title('Google Calendar API')
 
-    message.set_content('This is automated draft mail')
+events = cc.list_events(calendar_service)
+if not events:
+    print('No upcoming events found.')
+    st.write('No upcoming events found.')
 
-    message['To'] = 'jay4codes@gmail.com'
-    message['From'] = 'jay4emails@gmail.com'
-    message['Subject'] = 'Automated draft'
-
-    encoded_message = base64.urlsafe_b64encode(message.as_bytes()) \
-        .decode()
-
-    create_message = {
-        'raw': encoded_message
-    }
-
-    now = dt.datetime.now().isoformat() + 'Z'
-
-    events_result = service.events().list(calendarId='primary', timeMin=now,
-                                          maxResults=10, singleEvents=True, orderBy='startTime').execute()
-    events = events_result.get('items', [])
-
-    if not events:
-        print('No upcoming events found.')
-        st.write('No upcoming events found.')
-
-    for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['summary'])
-        st.write(start, event['summary'])
-
-except HttpError as error:
-    print(error)
-
-
-def create_event(new_event):
-    event = service.events().insert(calendarId='primary', body=new_event).execute()
-    mail_service.users().messages().send(userId='me', body=create_message).execute()
-    print('Event created: %s' % (event.get('htmlLink')))
-
+for event in events:
+    start = event['start'].get('dateTime', event['start'].get('date'))
+    print(start, event['summary'])
+    st.write(start, event['summary'])
 
 prompt = st.chat_input("Say something")
 if prompt:
     st.write(f"User has sent the following prompt: {prompt}")
 
-new_event = {
-    'summary': 'Google I/O 2023',
-    'location': '800 Howard St., San Francisco, CA 94103',
-    'description': 'A chance to hear more about Google\'s developer products.',
-    'start': {
-        'dateTime': '2023-08-28T09:00:00-07:00',
-        'timeZone': 'America/Los_Angeles',
-    },
-    'end': {
-        'dateTime': '2023-08-28T17:00:00-09:00',
-        'timeZone': 'America/Los_Angeles',
-    },
-    'recurrence': [
-        'RRULE:FREQ=DAILY;COUNT=2'
-    ],
-    'reminders': {
-        'useDefault': False,
-        'overrides': [
-            {'method': 'email', 'minutes': 24 * 60},
-            {'method': 'popup', 'minutes': 10},
-        ],
-    },
-}
+# event_summary = st.text_input("Event Summary", value="New Event")
+# start_date = st.date_input("Start Date")
+# start_time = st.time_input("Start Time")
+# end_date = st.date_input("End Date")
+# end_time = st.time_input("End Time")
+# location = st.text_input("Location", value="Online")
+# timezone = st.text_input("Timezone", value="America/Los_Angeles")
+# description = st.text_area("Description", value="")
 
-if st.button("Create Event"):
-    create_event(new_event)
+# if st.button("Submit"):
+#     print("Inside Submit")
+#     start_date = start_date.strftime("%Y-%m-%d")
+#     start_time = start_time.strftime("%H:%M:%S")
+#     end_date = end_date.strftime("%Y-%m-%d")
+#     end_time = end_time.strftime("%H:%M:%S")
+
+#     start_date_time = f"{start_date}T{start_time}-07:00"
+#     end_date_time = f"{end_date}T{end_time}-07:00"
+
+#     sender = user_service.userinfo().get().execute()['email']
+
+#     cc.create_event(calendar_service, event_summary, location,
+#                     timezone, description, start_date_time, end_date_time)
+#     st.write("Event Created" + event_summary)
+#     cg.send_gmail(mail_service, sender, "jay4codes@gmail.com",
+#                   "Event Created " + event_summary)
