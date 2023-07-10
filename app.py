@@ -18,7 +18,7 @@ from streamlit_folium import folium_static
 user_service, calendar_service, mail_service = gs.get_services()
 agent_executor = agent_chat.init_llm()
 
-st.title('Google Calendar API')
+st.title('BookMySlot.AI - Your Personal AI Receptionist')
 
 with st.sidebar:
     profile_image_url = user_service.userinfo().get().execute()['picture']
@@ -37,7 +37,7 @@ with st.sidebar:
 
 if selected == "Home":
     user_service, calendar_service, mail_service = gs.get_services()
-    custom_notification_box(icon='info', textDisplay='Reminder! for the appointment today at 4:00 PM with Dr. John Doe',
+    custom_notification_box(icon='info', textDisplay='Reminder for your next event: Synap Labs AI Team Meet tomorrow at 10:00 AM',
                             externalLink='more info', url='#', styles=styles, key="foo")
 
     events = cc.list_events(calendar_service)
@@ -49,9 +49,8 @@ if selected == "Home":
         df = pd.DataFrame(events)
         print(df.columns)
         new_df = df[['summary', 'location', 'htmlLink', 'start', 'end']]
-        new_df["rating"] = 0
-        new_df = new_df[['summary',
-                         'location', 'rating', 'start', 'end', 'htmlLink', ]]
+        new_df["rating"] = np.random.randint(1, 5, new_df.shape[0])
+        new_df = new_df[['summary', 'location', 'rating', 'start', 'end', 'htmlLink', ]]
         edited_df = st.data_editor(
             new_df,
             column_config={
