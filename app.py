@@ -158,6 +158,6 @@ elif "Dashboard":
         ).add_to(folium_map)
 
     # Display the map using Streamlit
-    st.markdown("## Restaurants and Salons in Mumbai, India")
+    st.markdown("## Previous Appointments in Mumbai, India")
     st.markdown("### Zoom in to explore")
     folium_static(folium_map)
