@@ -1,23 +1,35 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+import plotly.figure_factory as ff
+import folium
 
 import gcloud_services as gs
 import client_calendar as cc
 import client_gmail as cg
 
-import chat
+import agent_chat
 import pl_chat
 
 from streamlit_custom_notification_box import custom_notification_box
 from streamlit_option_menu import option_menu
+from st_custom_components import st_audiorec
+from streamlit_folium import folium_static
+
+import speech_recognition as sr
 
 user_service, calendar_service, mail_service = gs.get_services()
+agent_executor = agent_chat.init_llm()
 
 st.title('Google Calendar API')
 
 with st.sidebar:
-    selected = option_menu(None, ["Home", "Map", "Chat", 'Dashboard'],
-                           icons=['house', 'map', 'chat', 'pie'], menu_icon="cast", default_index=1)
+    profile_image_url = user_service.userinfo().get().execute()['picture']
+    st.image(profile_image_url, width=96)
+    st.success(user_service.userinfo().get().execute()
+               ['name'] + " Signed In Successfully")
+    selected = option_menu(None, ["Home", "Chat", "Form", "Dashboard"],
+                           icons=['house', 'chat', '',  'map'], menu_icon="cast", default_index=0)
 
     styles = {'material-icons': {'color': 'red'},
               'text-icon-link-close-container': {'box-shadow': '#3896de 0px 4px'},
@@ -28,9 +40,7 @@ with st.sidebar:
 
 if selected == "Home":
     user_service, calendar_service, mail_service = gs.get_services()
-    st.success(user_service.userinfo().get().execute()
-               ['name'] + " Signed In Successfully")
-    custom_notification_box(icon='info', textDisplay='We are almost done with your registration...',
+    custom_notification_box(icon='info', textDisplay='Reminder! for the appointment today at 4:00 PM with Dr. John Doe',
                             externalLink='more info', url='#', styles=styles, key="foo")
 
     events = cc.list_events(calendar_service)
@@ -59,17 +69,34 @@ if selected == "Home":
             hide_index=True,
         )
 
-elif selected == "Map":
-    st.map()
-
-
 elif selected == "Chat":
-    pl_chat.export_pl_chat()
-    # prompt = st.chat_input("Say something")
-    # if prompt:
-    #     st.write(f"User has sent the following prompt: {prompt}")
+    # pl_chat.export_pl_chat()
+    # wav_audio_data = st_audiorec()
 
-elif selected == "Dashboard":
+    # if wav_audio_data:
+    #     text = None
+    #     r = sr.Recognizer()
+    #     audio = sr.AudioData(wav_audio_data, 16000, 2)
+    #     text = r.recognize_google(audio)
+    #     st.write(text)
+
+    # col_info, col_space = st.columns([0.57, 0.43])
+    # with col_info:
+    #     st.write('\n')
+    #     st.write('\n')
+
+    # if wav_audio_data is not None:
+    #     col_playback, col_space = st.columns([0.58, 0.42])
+    #     with col_playback:
+    #         st.audio(wav_audio_data, format='audio/wav')
+
+    prompt = st.chat_input("Say something")
+    if prompt:
+        st.write("👦" + prompt)
+        st.write("👩‍💻" + agent_chat.execute_agent(agent_executor, prompt))
+
+
+elif selected == "Form":
     event_summary = st.text_input("Event Summary", value="New Event")
     start_date = st.date_input("Start Date")
     start_time = st.time_input("Start Time")
@@ -94,3 +121,70 @@ elif selected == "Dashboard":
         st.write("Event Created" + event_summary)
         cg.send_gmail(user_service, mail_service, "jay4codes@gmail.com",
                       "Event Created " + event_summary, location, start_date_time, end_date_time, description)
+
+elif "Dashboard":
+
+    # Add histogram data
+    x1 = np.random.randn(200) - 2
+    x2 = np.random.randn(200)
+    x3 = np.random.randn(200) + 2
+
+    # Group data together
+    hist_data = [x1, x2, x3]
+
+    group_labels = ['Group 1', 'Group 2', 'Group 3']
+
+    # Create distplot with custom bin_size
+    fig = ff.create_distplot(
+        hist_data, group_labels, bin_size=[.1, .25, .5])
+
+    # Plot!
+    st.plotly_chart(fig, use_container_width=True)
+
+    mumbai_location = [19.0760, 72.8777]
+    folium_map = folium.Map(location=mumbai_location, zoom_start=12)
+
+    # Define the restaurant locations in Mumbai with appointment time and summary
+    restaurant_locations = [
+        {"name": "Restaurant 1", "location": [
+            19.0741, 72.8629], "appointment_time": "10:00 AM", "summary": "Lunch meeting"},
+        {"name": "Restaurant 2", "location": [
+            19.0844, 72.8338], "appointment_time": "2:30 PM", "summary": "Team celebration"},
+        {"name": "Restaurant 3", "location": [
+            19.1102, 72.8262], "appointment_time": "7:00 PM", "summary": "Client dinner"}
+    ]
+
+    # Add restaurant markers to the map with tooltips
+    for restaurant in restaurant_locations:
+        tooltip_text = f"Appointment Time: {restaurant['appointment_time']}\nSummary: {restaurant['summary']}"
+        folium.Marker(
+            location=restaurant["location"],
+            popup=restaurant["name"],
+            tooltip=tooltip_text,
+            icon=folium.Icon(color="blue", icon="cutlery")
+        ).add_to(folium_map)
+
+    # Define the salon locations in Mumbai with appointment time and summary
+    salon_locations = [
+        {"name": "Salon 1", "location": [
+            19.0636, 72.8352], "appointment_time": "11:00 AM", "summary": "Haircut"},
+        {"name": "Salon 2", "location": [
+            19.0778, 72.8419], "appointment_time": "3:00 PM", "summary": "Manicure"},
+        {"name": "Salon 3", "location": [
+            19.0726, 72.8314], "appointment_time": "6:30 PM", "summary": "Spa session"}
+    ]
+
+    # Add salon markers to the map with tooltips
+    for salon in salon_locations:
+        tooltip_text = f"Appointment Time: {salon['appointment_time']}\nSummary: {salon['summary']}"
+        folium.Marker(
+            location=salon["location"],
+            popup=salon["name"],
+            tooltip=tooltip_text,
+            icon=folium.Icon(color="green", icon="scissors")
+        ).add_to(folium_map)
+
+    # Display the map using Streamlit
+    st.markdown("## Restaurants and Salons in Mumbai, India")
+    st.markdown("### Zoom in to explore")
+    folium_static(folium_map)
