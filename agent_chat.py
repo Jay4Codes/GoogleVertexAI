@@ -15,9 +15,9 @@ from langchain.utilities import SerpAPIWrapper
 from typing import List, Union
 from langchain.schema import AgentAction, AgentFinish
 from dotenv import dotenv_values
-load_dotenv()
 
-config = dotenv_values(".env")
+
+load_dotenv()
 
 
 def init_llm_and_serpapi():
@@ -35,7 +35,7 @@ def init_llm_and_serpapi():
             "engine": "google",
             "location": "Mumbai, Maharashtra, India",
         },
-        serpapi_api_key=config["SERPAPI_API_KEY"],
+        serpapi_api_key=os.getenv("SERPAPI_API_KEY"),
     )
 
     return llm, search
@@ -208,16 +208,14 @@ def execute_agent(agent_executor, query):
     return agent_executor.run(query)
 
 
-def main():
+def init_llm():
     print("Initializing LLM")
     llm, search = init_llm_and_serpapi()
     print("Initializing Agent")
     tools = init_tools(search)
     agent_executor = init_agent(llm, tools)
 
+    return agent_executor
+
     # to execute the agent, call execute_agent with the query
     # execute_agent(agent_executor, query)
-
-
-if __name__ == "__main__":
-    main()
