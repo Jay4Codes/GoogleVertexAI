@@ -42,12 +42,12 @@ if selected == "Home":
 
     events = cc.list_events(calendar_service)
     if not events:
-        print('No upcoming events found.')
+        # print('No upcoming events found.')
         st.write('No upcoming events found.')
 
     else:
         df = pd.DataFrame(events)
-        print(df.columns)
+        # print(df.columns)
         new_df = df[['summary', 'location', 'htmlLink', 'start', 'end']]
         new_df["rating"] = np.random.randint(1, 5, new_df.shape[0])
         new_df = new_df[['summary', 'location',
@@ -69,7 +69,6 @@ if selected == "Home":
 
 elif selected == "Chat":
 
-
     if 'generated' not in st.session_state:
         st.session_state['generated'] = []
 
@@ -86,10 +85,10 @@ elif selected == "Chat":
     if st.session_state['generated']:
 
         for i in range(len(st.session_state['generated'])-1, -1, -1):
-            message(st.session_state["generated"][i],
-                    key=str(i))
             message(st.session_state['past'][i],
                     is_user=True, key=str(i) + '_user')
+            message(st.session_state["generated"][i],
+                    key=str(i))
 
     # pl_chat.export_pl_chat()
     # agent_executor = agent_chat.init_llm()

@@ -80,10 +80,10 @@ def init_tools(search):
 
         end_datetime = end_datetime.strftime("%Y-%m-%dT%H:%M:%S")
 
-        print(f"Business Name: {business_name}")
-        print(f"Customer Name: {customer_name}")
-        print(f"Date and Time: {datetime}")
-        print(f"Purpose: {purpose}")
+        # print(f"Business Name: {business_name}")
+        # print(f"Customer Name: {customer_name}")
+        # print(f"Date and Time: {datetime}")
+        # print(f"Purpose: {purpose}")
         # TODO: Perform API Call to book appointment
 
         user_service, calendar_service, mail_service = gs.get_services()
