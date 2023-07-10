@@ -9,7 +9,6 @@ load_dotenv()
 
 
 def get_services():
-
     token = None
 
     SCOPES = ['https://www.googleapis.com/auth/calendar',
