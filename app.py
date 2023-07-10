@@ -13,10 +13,7 @@ import pl_chat
 
 from streamlit_custom_notification_box import custom_notification_box
 from streamlit_option_menu import option_menu
-from st_custom_components import st_audiorec
 from streamlit_folium import folium_static
-
-import speech_recognition as sr
 
 user_service, calendar_service, mail_service = gs.get_services()
 agent_executor = agent_chat.init_llm()
@@ -71,24 +68,6 @@ if selected == "Home":
 
 elif selected == "Chat":
     # pl_chat.export_pl_chat()
-    # wav_audio_data = st_audiorec()
-
-    # if wav_audio_data:
-    #     text = None
-    #     r = sr.Recognizer()
-    #     audio = sr.AudioData(wav_audio_data, 16000, 2)
-    #     text = r.recognize_google(audio)
-    #     st.write(text)
-
-    # col_info, col_space = st.columns([0.57, 0.43])
-    # with col_info:
-    #     st.write('\n')
-    #     st.write('\n')
-
-    # if wav_audio_data is not None:
-    #     col_playback, col_space = st.columns([0.58, 0.42])
-    #     with col_playback:
-    #         st.audio(wav_audio_data, format='audio/wav')
 
     prompt = st.chat_input("Say something")
     if prompt:
@@ -124,27 +103,21 @@ elif selected == "Form":
 
 elif "Dashboard":
 
-    # Add histogram data
     x1 = np.random.randn(200) - 2
     x2 = np.random.randn(200)
     x3 = np.random.randn(200) + 2
 
-    # Group data together
     hist_data = [x1, x2, x3]
 
     group_labels = ['Group 1', 'Group 2', 'Group 3']
-
-    # Create distplot with custom bin_size
     fig = ff.create_distplot(
         hist_data, group_labels, bin_size=[.1, .25, .5])
 
-    # Plot!
     st.plotly_chart(fig, use_container_width=True)
 
     mumbai_location = [19.0760, 72.8777]
     folium_map = folium.Map(location=mumbai_location, zoom_start=12)
 
-    # Define the restaurant locations in Mumbai with appointment time and summary
     restaurant_locations = [
         {"name": "Restaurant 1", "location": [
             19.0741, 72.8629], "appointment_time": "10:00 AM", "summary": "Lunch meeting"},
@@ -154,7 +127,6 @@ elif "Dashboard":
             19.1102, 72.8262], "appointment_time": "7:00 PM", "summary": "Client dinner"}
     ]
 
-    # Add restaurant markers to the map with tooltips
     for restaurant in restaurant_locations:
         tooltip_text = f"Appointment Time: {restaurant['appointment_time']}\nSummary: {restaurant['summary']}"
         folium.Marker(
@@ -164,7 +136,6 @@ elif "Dashboard":
             icon=folium.Icon(color="blue", icon="cutlery")
         ).add_to(folium_map)
 
-    # Define the salon locations in Mumbai with appointment time and summary
     salon_locations = [
         {"name": "Salon 1", "location": [
             19.0636, 72.8352], "appointment_time": "11:00 AM", "summary": "Haircut"},
@@ -174,7 +145,6 @@ elif "Dashboard":
             19.0726, 72.8314], "appointment_time": "6:30 PM", "summary": "Spa session"}
     ]
 
-    # Add salon markers to the map with tooltips
     for salon in salon_locations:
         tooltip_text = f"Appointment Time: {salon['appointment_time']}\nSummary: {salon['summary']}"
         folium.Marker(
