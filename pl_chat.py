@@ -58,6 +58,6 @@ Good morning, Arihant! I'd be happy to assist you in finding Italian restaurants
 
         st.button("Clear message", on_click=on_btn_click)
 
-    with st.container():
-        st.text_input("User Input:", on_change=on_input_change,
-                      key="user_input")
+    # with st.container():
+    #     st.text_input("User Input:", on_change=on_input_change,
+    #                   key="user_input")
