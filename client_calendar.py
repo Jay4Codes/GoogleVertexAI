@@ -11,7 +11,7 @@ def list_events(calendar_service):
 
 
 def create_event(calendar_service, summary, location, timeZone, description, startDateTime, endDateTime):
-    print("Inside CC Create Event")
+    # print("Inside CC Create Event")
     new_event = {
         'summary': summary,
         'location': location,
@@ -32,6 +32,6 @@ def create_event(calendar_service, summary, location, timeZone, description, sta
     event = calendar_service.events().insert(
         calendarId='primary', body=new_event).execute()
 
-    print("Event created")
+    # print("Event created")
 
     return event
