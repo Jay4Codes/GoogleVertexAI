@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
-import plotly.figure_factory as ff
 import folium
 
 import gcloud_services as gs
@@ -25,8 +23,8 @@ with st.sidebar:
     st.image(profile_image_url, width=96)
     st.success(user_service.userinfo().get().execute()
                ['name'] + " Signed In Successfully")
-    selected = option_menu(None, ["Home", "Chat", "Form", "Dashboard"],
-                           icons=['house', 'chat', '',  'map'], menu_icon="cast", default_index=0)
+    selected = option_menu(None, ["Home", "Chat", "Dashboard"],
+                           icons=['house', 'chat', 'map'], menu_icon="cast", default_index=0)
 
     styles = {'material-icons': {'color': 'red'},
               'text-icon-link-close-container': {'box-shadow': '#3896de 0px 4px'},
@@ -75,34 +73,34 @@ elif selected == "Chat":
         st.write("👦" + prompt)
         st.write("👩‍💻" + agent_chat.execute_agent(agent_executor, prompt))
 
-    pl_chat.export_pl_chat()
+    # pl_chat.export_pl_chat()
 
 
-elif selected == "Form":
-    event_summary = st.text_input("Event Summary", value="New Event")
-    start_date = st.date_input("Start Date")
-    start_time = st.time_input("Start Time")
-    end_date = st.date_input("End Date")
-    end_time = st.time_input("End Time")
-    location = st.text_input("Location", value="Online")
-    timezone = st.text_input("Timezone", value="Asia/Kolkata")
-    description = st.text_area("Description", value="")
+# elif selected == "Form":
+#     event_summary = st.text_input("Event Summary", value="New Event")
+#     start_date = st.date_input("Start Date")
+#     start_time = st.time_input("Start Time")
+#     end_date = st.date_input("End Date")
+#     end_time = st.time_input("End Time")
+#     location = st.text_input("Location", value="Online")
+#     timezone = st.text_input("Timezone", value="Asia/Kolkata")
+#     description = st.text_area("Description", value="")
 
-    if st.button("Submit"):
-        print("Inside Submit")
-        start_date = start_date.strftime("%Y-%m-%d")
-        start_time = start_time.strftime("%H:%M:%S")
-        end_date = end_date.strftime("%Y-%m-%d")
-        end_time = end_time.strftime("%H:%M:%S")
+#     if st.button("Submit"):
+#         print("Inside Submit")
+#         start_date = start_date.strftime("%Y-%m-%d")
+#         start_time = start_time.strftime("%H:%M:%S")
+#         end_date = end_date.strftime("%Y-%m-%d")
+#         end_time = end_time.strftime("%H:%M:%S")
 
-        start_date_time = f"{start_date}T{start_time}-07:00"
-        end_date_time = f"{end_date}T{end_time}-07:00"
+#         start_date_time = f"{start_date}T{start_time}-07:00"
+#         end_date_time = f"{end_date}T{end_time}-07:00"
 
-        cc.create_event(calendar_service, event_summary, location,
-                        timezone, description, start_date_time, end_date_time)
-        st.write("Event Created" + event_summary)
-        cg.send_gmail(user_service, mail_service, "jay4codes@gmail.com",
-                      "Event Created " + event_summary, location, start_date_time, end_date_time, description)
+#         cc.create_event(calendar_service, event_summary, location,
+#                         timezone, description, start_date_time, end_date_time)
+#         st.write("Event Created" + event_summary)
+#         cg.send_gmail(user_service, mail_service, "jay4codes@gmail.com",
+#                       "Event Created " + event_summary, location, start_date_time, end_date_time, description)
 
 elif "Dashboard":
 
