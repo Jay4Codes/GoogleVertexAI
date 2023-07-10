@@ -12,70 +12,36 @@ def on_btn_click():
     del st.session_state.past[:]
     del st.session_state.generated[:]
 
+
 def export_pl_chat():
-    audio_path = "https://docs.google.com/uc?export=open&id=16QSvoLWNxeqco_Wb2JvzaReSAw5ow6Cl"
-    img_path = "https://www.groundzeroweb.com/wp-content/uploads/2017/05/Funny-Cat-Memes-11.jpg"
-    youtube_embed = '''
-    <iframe width="400" height="215" src="https://www.youtube.com/embed/LMQ5Gauy17k" title="YouTube video player" frameborder="0" allow="accelerometer; encrypted-media;"></iframe>
-    '''
-
-    markdown = """
-    ### HTML in markdown is ~quite~ **unsafe**
-    <blockquote>
-    However, if you are in a trusted environment (you trust the markdown). You can use allow_html props to enable support for html.
-    </blockquote>
-
-    * Lists
-    * [ ] todo
-    * [x] done
-
-    Math:
-
-    Lift($L$) can be determined by Lift Coefficient ($C_L$) like the following
-    equation.
-
-    $$
-    L = \\frac{1}{2} \\rho v^2 S C_L
-    $$
-
-    ~~~py
-    import streamlit as st
-
-    st.write("Python code block")
-    ~~~
-
-    ~~~js
-    console.log("Here is some JavaScript code")
-    ~~~
-
-    """
-
     table_markdown = '''
-    A Table:
-
-    | Feature     | Support              |
-    | ----------: | :------------------- |
-    | CommonMark  | 100%                 |
-    | GFM         | 100% w/ `remark-gfm` |
+Good morning, Arihant! I'd be happy to assist you in finding Italian restaurants in the Powai area. Give me a moment to gather the information for you. 
+| Restaurant        | Rating | Price Range |
+| ----------------- | ------ | ----------- |
+| The Italian Place | 4.5/5  | ₹₹          |
+| Pizza Hut         | 4.3/5  | ₹₹₹         |
+| Olive Garden      | 4.7/5  | ₹₹₹₹        |
+| Papa John's       | 4.2/5  | ₹₹          |
+| Domino's Pizza    | 4.4/5  | ₹₹₹         |
     '''
 
     st.session_state.setdefault(
         'past',
-        ['plan text with line break',
-        'play the song "Dancing Vegetables"',
-        'show me image of cat',
-        'and video of it',
-        'show me some markdown sample',
-        'table in markdown']
+        ["Good morning! I'm looking for some Italian restaurants near me in Powai, Mumbai. Can you help me out?",
+         "Thank you for the suggestions! Olive Garden sounds great. Can you please book a table for four people at Olive Garden for tonight at 8pm?",
+         "Yes, that's correct!",
+         'My name is Arihant.',
+         'Sure, my contact number is 9876543210.',
+         "No, that's all for now. Thank you so much for your help!"]
     )
     st.session_state.setdefault(
         'generated',
-        [{'type': 'normal', 'data': 'Line 1 \n Line 2 \n Line 3'},
-        {'type': 'normal', 'data': f'<audio controls src="{audio_path}"></audio>'},
-        {'type': 'normal', 'data': f'<img width="100%" height="200" src="{img_path}"/>'},
-        {'type': 'normal', 'data': f'{youtube_embed}'},
-        {'type': 'normal', 'data': f'{markdown}'},
-        {'type': 'table', 'data': f'{table_markdown}'}]
+        [{'type': 'normal', 'data': f"{table_markdown}"},
+         {'type': 'normal', 'data': f"Certainly, Arihant! I'll take care of that for you. Just to confirm, you would like a table for four people at Olive Garden tonight at 8pm, correct?"},
+         {'type': 'normal', 'data': f"Great! I'll proceed with making the reservation for you. May I have your name, please?"},
+         {'type': 'normal', 'data': f"Thank you, Arihant. I'm almost done with the booking process. Could you please provide me with a contact number where the restaurant can reach you for any updates?"},
+         {'type': 'normal', 'data': f"Thank you for providing your contact number, Arihant. I have successfully made a reservation for four people at Olive Garden tonight at 8pm. They will contact you if needed. Is there anything else I can assist you with?"},
+         {'type': 'table', 'data': f"You're welcome, Arihant! If you have any other questions or need further assistance in the future, feel free to ask. Enjoy your meal at Olive Garden tonight!"}]
     )
 
     chat_placeholder = st.empty()
@@ -93,4 +59,5 @@ def export_pl_chat():
         st.button("Clear message", on_click=on_btn_click)
 
     with st.container():
-        st.text_input("User Input:", on_change=on_input_change, key="user_input")
+        st.text_input("User Input:", on_change=on_input_change,
+                      key="user_input")

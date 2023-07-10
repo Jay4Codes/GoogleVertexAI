@@ -74,6 +74,8 @@ elif selected == "Chat":
         st.write("👦" + prompt)
         st.write("👩‍💻" + agent_chat.execute_agent(agent_executor, prompt))
 
+    pl_chat.export_pl_chat()
+
 
 elif selected == "Form":
     event_summary = st.text_input("Event Summary", value="New Event")
@@ -103,17 +105,17 @@ elif selected == "Form":
 
 elif "Dashboard":
 
-    x1 = np.random.randn(200) - 2
-    x2 = np.random.randn(200)
-    x3 = np.random.randn(200) + 2
+    # x1 = np.random.randn(200) - 2
+    # x2 = np.random.randn(200)
+    # x3 = np.random.randn(200) + 2
 
-    hist_data = [x1, x2, x3]
+    # hist_data = [x1, x2, x3]
 
-    group_labels = ['Group 1', 'Group 2', 'Group 3']
-    fig = ff.create_distplot(
-        hist_data, group_labels, bin_size=[.1, .25, .5])
+    # group_labels = ['Group 1', 'Group 2', 'Group 3']
+    # fig = ff.create_distplot(
+    #     hist_data, group_labels, bin_size=[.1, .25, .5])
 
-    st.plotly_chart(fig, use_container_width=True)
+    # st.plotly_chart(fig, use_container_width=True)
 
     mumbai_location = [19.0760, 72.8777]
     folium_map = folium.Map(location=mumbai_location, zoom_start=12)
@@ -155,6 +157,6 @@ elif "Dashboard":
         ).add_to(folium_map)
 
     # Display the map using Streamlit
-    st.markdown("## Restaurants and Salons in Mumbai, India")
+    st.markdown("## Previous Appointments in Mumbai, India")
     st.markdown("### Zoom in to explore")
     folium_static(folium_map)
