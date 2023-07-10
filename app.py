@@ -79,8 +79,8 @@ elif selected == "Chat":
 
     if prompt:
         output = agent_chat.execute_agent(agent_executor, prompt)
-        st.session_state.past.append(prompt)
-        st.session_state.generated.append(output)
+        st.session_state.past.insert(0, prompt)
+        st.session_state.generated.insert(0, output)
 
     if st.session_state['generated']:
 
