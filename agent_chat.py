@@ -5,6 +5,9 @@ import datetime as dt
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import VertexAI
 from langchain.tools import Tool
+import client_calendar as cc
+import client_gmail as cg
+import datetime as dt
 
 from langchain.agents import Tool, AgentExecutor, LLMSingleActionAgent, AgentOutputParser
 from langchain.agents import LLMSingleActionAgent
@@ -15,6 +18,7 @@ from langchain.utilities import SerpAPIWrapper
 from typing import List, Union
 from langchain.schema import AgentAction, AgentFinish
 from dotenv import dotenv_values
+import gcloud_services as gs
 
 
 load_dotenv()
@@ -46,11 +50,11 @@ def init_tools(search):
     def book_appointment(input_text):
 
         business_name = re.search(
-            r"business_name: (.+?),", input_text).group(1)
+            r"business_name: (.+?),", input_text).group(1).title()
         customer_name = re.search(
-            r"customer_name: (.+?),", input_text).group(1)
-        datetime = re.search(r"datetime: (.+?),", input_text).group(1)
-        purpose = re.search(r"purpose: (.+?)$", input_text).group(1)
+            r"customer_name: (.+?),", input_text).group(1).title()
+        datetime = re.search(r"datetime: (.+?),", input_text).group(1).title()
+        purpose = re.search(r"purpose: (.+?)$", input_text).group(1).title()
 
         if business_name == "[business_name]" or business_name == "[user_name]":
             return "Business Name not provided."
@@ -69,12 +73,25 @@ def init_tools(search):
         if datetime < dt.datetime.now():
             return "Datetime provided is in the past. Please provide a future date and time."
 
+        start_datetime = datetime.strftime("%Y-%m-%dT%H:%M:%S")
+        end_datetime = datetime + dt.timedelta(hours=1)
+
+        end_datetime = end_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+
         print(f"Business Name: {business_name}")
         print(f"Customer Name: {customer_name}")
         print(f"Date and Time: {datetime}")
         print(f"Purpose: {purpose}")
         # TODO: Perform API Call to book appointment
-        return f"{customer_name}'s {purpose} reservation booked with {business_name} at {datetime}"
+
+        user_service, calendar_service, mail_service = gs.get_services()
+        cc.create_event(calendar_service, summary=business_name, description=purpose, startDateTime=start_datetime,
+                        endDateTime=end_datetime, timeZone="Asia/Kolkata", location="Mumbai, Maharashtra, India")
+
+        cg.send_gmail(user_service, mail_service, receiver="arihant.sheth0802@gmail.com",
+                      description=f"{purpose} confirmed at {business_name}", startDateTime=start_datetime, endDateTime=end_datetime, location="Mumbai, Maharashtra, India", subject=f"Appointment Confirmed at {business_name}", summary=f"{purpose} at {business_name}")
+
+        return f"{customer_name}'s {purpose} reservation booked with {business_name} at {datetime}. Event has been created in user's calendar and an email has been sent to the user."
 
     def ask_within_context(input_text):
         return "You can answer this question yourself. Use your own knowledge or conversation history to answer the question."
@@ -102,7 +119,7 @@ def init_tools(search):
 
 def init_agent(llm, tools):
 
-    template_with_history = """You are a compassionate, talkative AI Receptionist. You have to help users with their bookings. Ask the user if they require any help. Use gender neutral pronouns unless they mention their pronouns. You have access to the following tools:
+    template_with_history = """You are a compassionate, talkative AI Receptionist. You have to help users with their bookings. Ask the user if they require any help. Use gender neutral pronouns unless they mention their pronouns. All queries are related to Mumbai, India. You have access to the following tools:
 
 {tools}
 
