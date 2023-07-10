@@ -1,7 +1,6 @@
 import streamlit as st
-import pandas as pd
 import numpy as np
-import plotly.figure_factory as ff
+import pandas as pd
 import folium
 
 import gcloud_services as gs
@@ -14,8 +13,10 @@ import pl_chat
 from streamlit_custom_notification_box import custom_notification_box
 from streamlit_option_menu import option_menu
 from streamlit_folium import folium_static
+from streamlit_chat import message
 
 user_service, calendar_service, mail_service = gs.get_services()
+agent_executor = agent_chat.init_llm()
 
 st.title('BookMySlot.AI - Your Personal AI Receptionist')
 
@@ -24,8 +25,8 @@ with st.sidebar:
     st.image(profile_image_url, width=96)
     st.success(user_service.userinfo().get().execute()
                ['name'] + " Signed In Successfully")
-    selected = option_menu(None, ["Home", "Chat", "Form", "Dashboard"],
-                           icons=['house', 'chat', '',  'map'], menu_icon="cast", default_index=0)
+    selected = option_menu(None, ["Home", "Chat", "Dashboard"],
+                           icons=['house', 'chat', 'map'], menu_icon="cast", default_index=0)
 
     styles = {'material-icons': {'color': 'red'},
               'text-icon-link-close-container': {'box-shadow': '#3896de 0px 4px'},
@@ -49,7 +50,8 @@ if selected == "Home":
         print(df.columns)
         new_df = df[['summary', 'location', 'htmlLink', 'start', 'end']]
         new_df["rating"] = np.random.randint(1, 5, new_df.shape[0])
-        new_df = new_df[['summary', 'location', 'rating', 'start', 'end', 'htmlLink', ]]
+        new_df = new_df[['summary', 'location',
+                         'rating', 'start', 'end', 'htmlLink', ]]
         edited_df = st.data_editor(
             new_df,
             column_config={
@@ -66,41 +68,53 @@ if selected == "Home":
         )
 
 elif selected == "Chat":
-    # pl_chat.export_pl_chat()
-    agent_executor = agent_chat.init_llm()
-    prompt = st.chat_input("Enter your message here")
+
+
+    if 'generated' not in st.session_state:
+        st.session_state['generated'] = []
+
+    if 'past' not in st.session_state:
+        st.session_state['past'] = []
+
+    prompt = st.chat_input("How may I help you?")
+
     if prompt:
-        st.write("👦" + prompt)
-        st.write("👩‍💻" + agent_chat.execute_agent(agent_executor, prompt))
+        output = agent_chat.execute_agent(agent_executor, prompt)
+        st.session_state.past.append(prompt)
+        st.session_state.generated.append(output)
+
+    if st.session_state['generated']:
+
+        for i in range(len(st.session_state['generated'])-1, -1, -1):
+            message(st.session_state["generated"][i],
+                    key=str(i))
+            message(st.session_state['past'][i],
+                    is_user=True, key=str(i) + '_user')
+
+    # pl_chat.export_pl_chat()
+    # agent_executor = agent_chat.init_llm()
+    # prompt = st.chat_input("Enter your message here")
+    # if prompt:
+    #     st.write("👦" + prompt)
+    #     st.write("👩‍💻" + agent_chat.execute_agent(agent_executor, prompt))
 
     # pl_chat.export_pl_chat()
 
+#     if st.button("Submit"):
+#         print("Inside Submit")
+#         start_date = start_date.strftime("%Y-%m-%d")
+#         start_time = start_time.strftime("%H:%M:%S")
+#         end_date = end_date.strftime("%Y-%m-%d")
+#         end_time = end_time.strftime("%H:%M:%S")
 
-elif selected == "Form":
-    event_summary = st.text_input("Event Summary", value="New Event")
-    start_date = st.date_input("Start Date")
-    start_time = st.time_input("Start Time")
-    end_date = st.date_input("End Date")
-    end_time = st.time_input("End Time")
-    location = st.text_input("Location", value="Online")
-    timezone = st.text_input("Timezone", value="Asia/Kolkata")
-    description = st.text_area("Description", value="")
+#         start_date_time = f"{start_date}T{start_time}-07:00"
+#         end_date_time = f"{end_date}T{end_time}-07:00"
 
-    if st.button("Submit"):
-        print("Inside Submit")
-        start_date = start_date.strftime("%Y-%m-%d")
-        start_time = start_time.strftime("%H:%M:%S")
-        end_date = end_date.strftime("%Y-%m-%d")
-        end_time = end_time.strftime("%H:%M:%S")
-
-        start_date_time = f"{start_date}T{start_time}-07:00"
-        end_date_time = f"{end_date}T{end_time}-07:00"
-
-        cc.create_event(calendar_service, event_summary, location,
-                        timezone, description, start_date_time, end_date_time)
-        st.write("Event Created" + event_summary)
-        cg.send_gmail(user_service, mail_service, "jay4codes@gmail.com",
-                      "Event Created " + event_summary, location, start_date_time, end_date_time, description)
+#         cc.create_event(calendar_service, event_summary, location,
+#                         timezone, description, start_date_time, end_date_time)
+#         st.write("Event Created" + event_summary)
+#         cg.send_gmail(user_service, mail_service, "jay4codes@gmail.com",
+#                       "Event Created " + event_summary, location, start_date_time, end_date_time, description)
 
 elif "Dashboard":
 
