@@ -47,6 +47,7 @@ if selected == "Home":
 
     else:
         df = pd.DataFrame(events)
+        print(df.columns)
         new_df = df[['summary', 'location', 'htmlLink', 'start', 'end']]
         new_df["rating"] = 0
         new_df = new_df[['summary',
@@ -82,7 +83,7 @@ elif selected == "Form":
     end_date = st.date_input("End Date")
     end_time = st.time_input("End Time")
     location = st.text_input("Location", value="Online")
-    timezone = st.text_input("Timezone", value="America/Los_Angeles")
+    timezone = st.text_input("Timezone", value="Asia/Kolkata")
     description = st.text_area("Description", value="")
 
     if st.button("Submit"):

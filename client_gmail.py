@@ -2,13 +2,15 @@ from email.message import EmailMessage
 import base64
 
 
-def send_gmail(user_service, mail_service, receiver, summary, location, startDateTime, endDateTime, description):
+def send_gmail(user_service, mail_service, receiver, summary, location, startDateTime, endDateTime, description, subject="Appointment Booked"):
     print("Inside Send Gmail")
     sender = user_service.userinfo().get().execute()['email']
     message = EmailMessage()
     message_text = f'''
     <html>
     <head>
+        <title>Appointment Booked</title>
+        Hi, <br><br> Your appointment has been booked. Please find the details below: <br><br>
         <style>
             table {{
                 border-collapse: collapse;
@@ -41,13 +43,17 @@ def send_gmail(user_service, mail_service, receiver, summary, location, startDat
                 <td>{description}</td>
             </tr>
         </table>
+
+        <br><br>
+        Thanks,<br>
+        Your personal AI Receptionist.
     </body>
     </html>
     '''
 
     message['To'] = receiver
     message['From'] = sender
-    message['Subject'] = "New Appointment Report"
+    message['Subject'] = subject
     # message.add_header('Content-Type', 'text/html')
     message.add_alternative(message_text, subtype='html')
     # message.set_content(message_text)
