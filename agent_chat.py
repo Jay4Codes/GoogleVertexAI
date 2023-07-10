@@ -19,6 +19,7 @@ from typing import List, Union
 from langchain.schema import AgentAction, AgentFinish
 from dotenv import dotenv_values
 import gcloud_services as gs
+import streamlit as st
 
 
 load_dotenv()
@@ -90,6 +91,7 @@ def init_tools(search):
 
         cg.send_gmail(user_service, mail_service, receiver="arihant.sheth0802@gmail.com",
                       description=f"{purpose} confirmed at {business_name}", startDateTime=start_datetime, endDateTime=end_datetime, location="Mumbai, Maharashtra, India", subject=f"Appointment Confirmed at {business_name}", summary=f"{purpose} at {business_name}")
+        st.balloons()
 
         return f"{customer_name}'s {purpose} reservation booked with {business_name} at {datetime}. Event has been created in user's calendar and an email has been sent to the user."
 

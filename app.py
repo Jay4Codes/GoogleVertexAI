@@ -1,4 +1,5 @@
 import streamlit as st
+import numpy as np
 import pandas as pd
 import folium
 
@@ -12,6 +13,7 @@ import pl_chat
 from streamlit_custom_notification_box import custom_notification_box
 from streamlit_option_menu import option_menu
 from streamlit_folium import folium_static
+from streamlit_chat import message
 
 user_service, calendar_service, mail_service = gs.get_services()
 agent_executor = agent_chat.init_llm()
@@ -48,7 +50,8 @@ if selected == "Home":
         print(df.columns)
         new_df = df[['summary', 'location', 'htmlLink', 'start', 'end']]
         new_df["rating"] = np.random.randint(1, 5, new_df.shape[0])
-        new_df = new_df[['summary', 'location', 'rating', 'start', 'end', 'htmlLink', ]]
+        new_df = new_df[['summary', 'location',
+                         'rating', 'start', 'end', 'htmlLink', ]]
         edited_df = st.data_editor(
             new_df,
             column_config={
@@ -65,12 +68,26 @@ if selected == "Home":
         )
 
 elif selected == "Chat":
-    # pl_chat.export_pl_chat()
+    if 'generated' not in st.session_state:
+        st.session_state['generated'] = []
 
-    prompt = st.chat_input("Say something")
+    if 'past' not in st.session_state:
+        st.session_state['past'] = []
+
+    prompt = st.chat_input("How may I help you?")
+
     if prompt:
-        st.write("👦" + prompt)
-        st.write("👩‍💻" + agent_chat.execute_agent(agent_executor, prompt))
+        output = agent_chat.execute_agent(agent_executor, prompt)
+        st.session_state.past.append(prompt)
+        st.session_state.generated.append(output)
+
+    if st.session_state['generated']:
+
+        for i in range(len(st.session_state['generated'])-1, -1, -1):
+            message(st.session_state["generated"][i],
+                    key=str(i))
+            message(st.session_state['past'][i],
+                    is_user=True, key=str(i) + '_user')
 
     # pl_chat.export_pl_chat()
 
