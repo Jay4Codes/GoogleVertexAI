@@ -4,7 +4,7 @@ google-auth>=2.21.0
 google-api-python-client>=2.92.0
 google-api-core>=2.11.1
 python-dotenv>=0.21.1
-streamlit-chat-0.1.1
-streamlit-option-menu-0.3.6
-streamlit-elements-0.1.0
-streamlit-custom-notification-box-0.1.2
+streamlit-chat>=0.1.1
+streamlit-option-menu>=0.3.6
+streamlit-elements>=0.1.0
+streamlit-custom-notification-box>=0.1.2
