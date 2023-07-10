@@ -16,7 +16,6 @@ from streamlit_option_menu import option_menu
 from streamlit_folium import folium_static
 
 user_service, calendar_service, mail_service = gs.get_services()
-agent_executor = agent_chat.init_llm()
 
 st.title('BookMySlot.AI - Your Personal AI Receptionist')
 
@@ -68,13 +67,13 @@ if selected == "Home":
 
 elif selected == "Chat":
     # pl_chat.export_pl_chat()
-
-    prompt = st.chat_input("Say something")
+    agent_executor = agent_chat.init_llm()
+    prompt = st.chat_input("Enter your message here")
     if prompt:
         st.write("👦" + prompt)
         st.write("👩‍💻" + agent_chat.execute_agent(agent_executor, prompt))
 
-    pl_chat.export_pl_chat()
+    # pl_chat.export_pl_chat()
 
 
 elif selected == "Form":
