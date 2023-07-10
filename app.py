@@ -68,6 +68,8 @@ if selected == "Home":
         )
 
 elif selected == "Chat":
+
+
     if 'generated' not in st.session_state:
         st.session_state['generated'] = []
 
@@ -90,17 +92,13 @@ elif selected == "Chat":
                     is_user=True, key=str(i) + '_user')
 
     # pl_chat.export_pl_chat()
+    # agent_executor = agent_chat.init_llm()
+    # prompt = st.chat_input("Enter your message here")
+    # if prompt:
+    #     st.write("👦" + prompt)
+    #     st.write("👩‍💻" + agent_chat.execute_agent(agent_executor, prompt))
 
-
-# elif selected == "Form":
-#     event_summary = st.text_input("Event Summary", value="New Event")
-#     start_date = st.date_input("Start Date")
-#     start_time = st.time_input("Start Time")
-#     end_date = st.date_input("End Date")
-#     end_time = st.time_input("End Time")
-#     location = st.text_input("Location", value="Online")
-#     timezone = st.text_input("Timezone", value="Asia/Kolkata")
-#     description = st.text_area("Description", value="")
+    # pl_chat.export_pl_chat()
 
 #     if st.button("Submit"):
 #         print("Inside Submit")

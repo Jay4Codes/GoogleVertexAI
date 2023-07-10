@@ -8,6 +8,7 @@ from langchain.tools import Tool
 import client_calendar as cc
 import client_gmail as cg
 import datetime as dt
+import streamlit as st
 
 from langchain.agents import Tool, AgentExecutor, LLMSingleActionAgent, AgentOutputParser
 from langchain.agents import LLMSingleActionAgent
@@ -33,7 +34,7 @@ def init_llm_and_serpapi():
     # )
 
     # ["project", "location", "credentials"]
-    llm = VertexAI()
+    llm = VertexAI(max_output_tokens=1024)
 
     search = SerpAPIWrapper(
         params={
@@ -106,7 +107,7 @@ def init_tools(search):
         ),
         Tool(
             name="Search",
-            description="Search the web for information.",
+            description="Useful when user asks about restaurants, hotels, or other businesses. Give detailed response about the ratings, price range and websites about the businesses. Also include reviews from Google Reviews. Location: Mumbai, India.",
             func=search.run,
         ),
         Tool(
@@ -121,7 +122,11 @@ def init_tools(search):
 
 def init_agent(llm, tools):
 
-    template_with_history = """You are a compassionate, talkative AI Receptionist. You have to help users with their bookings. Ask the user if they require any help. Use gender neutral pronouns unless they mention their pronouns. All queries are related to Mumbai, India. You have access to the following tools:
+    template_with_history = """\
+You are a compassionate, talkative AI Receptionist, named Linus. You have to help users with their bookings. 
+Ask the user if they require any help. All queries are related to Mumbai, India. 
+When the user asks you to suggest some good restaurants, hotels, or other businesses, use the Search tool to find the best businesses. Also include reviews from Google Reviews, their price range, and what they are famous for.
+You have access to the following tools:
 
 {tools}
 
@@ -134,7 +139,7 @@ Action Input: the input to the action
 Observation: the result of the action
 ... (this Thought/Action/Action Input/Observation can repeat N times)
 Thought: I now know the final answer
-Final Answer: the final answer to the original input question
+Final Answer: the final answer to the original input question. format your answer in a detailed way and give long answers.
 
 Begin! Remember to answer as a compansionate AI Receptionist when giving your final answer.
 
@@ -192,6 +197,7 @@ Question: {input}
             regex = r"Action\s*\d*\s*:(.*?)\nAction\s*\d*\s*Input\s*\d*\s*:[\s]*(.*)"
             match = re.search(regex, llm_output, re.DOTALL)
             if not match:
+                print(f"\n\n\n\n\n{llm_output}\n\n\n\n\n")
                 raise ValueError(f"Could not parse LLM output: `{llm_output}`")
             action = match.group(1).strip()
             action_input = match.group(2)
@@ -216,7 +222,7 @@ Question: {input}
     agent_executor = AgentExecutor.from_agent_and_tools(
         agent=agent,
         tools=tools,
-        verbose=False,
+        verbose=True,
         memory=memory
     )
 
@@ -226,7 +232,7 @@ Question: {input}
 def execute_agent(agent_executor, query):
     return agent_executor.run(query)
 
-
+@st.experimental_singleton
 def init_llm():
     print("Initializing LLM")
     llm, search = init_llm_and_serpapi()
