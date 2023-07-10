@@ -9,6 +9,9 @@ load_dotenv()
 
 
 def get_services():
+
+    token = None
+
     SCOPES = ['https://www.googleapis.com/auth/calendar',
               'https://www.googleapis.com/auth/gmail.send',
               'https://www.googleapis.com/auth/userinfo.profile',
@@ -16,8 +19,10 @@ def get_services():
               'openid']
 
     creds = None
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    # if os.path.exists('token.json'):
+    if token:
+        # creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        creds = Credentials.from_authorized_user_file(token, SCOPES)
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
@@ -39,12 +44,11 @@ def get_services():
                     }
                 },
                 SCOPES)
-            # flow=InstalledAppFlow.from_client_secrets_file(
-            #     'credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
 
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
+        # with open('token.json', 'w') as token:
+        #     token.write(creds.to_json())
+        token = creds.to_json()
 
     user_service = build('oauth2', 'v2', credentials=creds)
     calendar_service = build('calendar', 'v3', credentials=creds)
