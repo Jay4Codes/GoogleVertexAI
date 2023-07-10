@@ -19,10 +19,10 @@ def get_services():
               'openid']
 
     creds = None
-    # if os.path.exists('token.json'):
-    if token:
-        # creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-        creds = Credentials.from_authorized_user_file(token, SCOPES)
+    if os.path.exists('token.json'):
+        # if token:
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        # creds = Credentials.from_authorized_user_file(token, SCOPES)
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
@@ -46,9 +46,9 @@ def get_services():
                 SCOPES)
             creds = flow.run_local_server(port=0)
 
-        # with open('token.json', 'w') as token:
-        #     token.write(creds.to_json())
-        token = creds.to_json()
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+        # token = creds.to_json()
 
     user_service = build('oauth2', 'v2', credentials=creds)
     calendar_service = build('calendar', 'v3', credentials=creds)
