@@ -232,7 +232,8 @@ Question: {input}
 def execute_agent(agent_executor, query):
     return agent_executor.run(query)
 
-@st.experimental_singleton
+# @st.experimental_singleton
+@st.cache_resource
 def init_llm():
     print("Initializing LLM")
     llm, search = init_llm_and_serpapi()
